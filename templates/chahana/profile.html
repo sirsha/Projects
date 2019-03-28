@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+       <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css" integrity="sha512-dTfge/zgoMYpP7QbHy4gWMEGsbsdZeCXz7irItjcC3sPUFtf0kuFbDz/ixG7ArTxmDjLXDmezHubeNikyKGVyQ==" crossorigin="anonymous">
+    <script src="https://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script>
+    <script type='text/javascript' src='//code.jquery.com/jquery-1.8.3.js'></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.5.0/css/bootstrap-datepicker3.min.css">
+    <script type='text/javascript' src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.5.0/js/bootstrap-datepicker.min.js"></script>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <form>
+        {% csrf_token %}
+        <input class="text" type="text" name="firstname" placeholder="Firstname" required="" id="firstname"><br>
+        <input class="text" type="text" name="lastname" placeholder="Lastname" required="" id="lastname"><br>
+        <label for="birthday">Birthdate</label>
+        <input type="date" name="birthday" id="birthday" id="birthday"><br>
+        <label>Bloodgroup</label>
+         <select class="form-control" id="blood" onclick="">
+                    <option disabled selected>Choose Here</option>
+                    {% for i in data %}
+                    <option value={{i}}>{{i}}</option>
+                    {% endfor %}
+         </select>
+        <input type="file" name="pic" accept=".jpg|image/*" placeholder="photo" id="photo">
+        <input class="text" type="text" name="phonenumber" placeholder="phonenumber" required="" id="phonenumber">
+
+
+        <!--<select name="bloodgroup">-->
+        <!--<option value="A+">A+</option>-->
+        <!--<option value="B+">B+</option>-->
+        <!--<option value="AB+">AB+</option>-->
+        <!--<option value="A-">A-</option>-->
+            <!--<option value="B-">B-</option>-->
+            <!--<option value="O+">O+</option>-->
+            <!--<option value="O-">O-</option>-->
+        </select><br>
+        <h1  id="submit"><span class="btn btn-primary">Submit </span></h1>
+    </form>
+
+   </head>
+<body>
+<script>
+    $(document).ready(function(){
+
+    $("#submit").click(function() { // using the unique ID of the button
+        console.log("This is test");
+
+        var firstname=$("#firstname").val();
+        var lastname=$("#lastname").val();
+        var birthday=$("#birthday").val();
+        var blood = $("#blood option:selected").text();
+        var photo = $("#photo").val();
+        var phonenumber = $("#phonenumber").val();
+
+
+        if(blood!="" && firstname!="" && lastname!="" && birthday!="" && blood!="Choose Here"&& photo!="" && phonenumber!=""){
+        console.log(firstname);
+        console.log(lastname);
+        console.log(birthday);
+        console.log(blood);
+        console.log(photo);
+        console.log(phonenumber);
+         var csrftoken = jQuery("[name=csrfmiddlewaretoken]").val();
+
+                        function csrfSafeMethod(method) {
+                            // these HTTP methods do not require CSRF protection
+                            return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+                        }
+                        // set csrf header
+                        $.ajaxSetup({
+                            beforeSend: function(xhr, settings) {
+                                if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+                                    xhr.setRequestHeader("X-CSRFToken", csrftoken);
+                                }
+                            }
+                        });
+
+                         $.ajax({
+                            type : "POST",
+                            url: "/chahana/user_profile/",
+                            data:{
+                                'first':firstname,
+                                'last':lastname,
+                                'birthday':birthday,
+                                'blood':blood,
+                                'photo':photo,
+                                'phonenumber':phonenumber,
+
+                            },
+                             dataType: 'json',
+                    success: function (data) {
+                      if (data.is_taken) {
+                        alert("A user with this username already exists.");
+                      }
+                    },
+                     error: function (jqXHR, status, err) {
+                            alert("error found")
+              },
+                        });
+               }
+
+       });
+
+ });
+</script>
+</body>
+</html>

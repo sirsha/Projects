@@ -1,0 +1,45 @@
+<html>
+<head></head>
+<body>
+<h1>Welcome {{username}}</h1>
+	<form method='post' action={% url 'chahana:follow' %}>
+		{% csrf_token %}
+	<input type="text" name="firstuser" value="{{username}}">
+	<select name="secondname">
+	  <option value="secondname" selected disabled hidden>Choose here</option>
+		{% for i in use %}
+	  <option value="{{i.id}}">{{i.names}}</option>
+		{% endfor %}
+	</select>
+	<input type="submit" value="Follow" id="clickMe">
+	</form>
+	<br>
+	<script>
+	$(document).ready(function(){
+		$("#clickMe").click(function() {
+		$.ajax({
+			type:'POST',
+			url:'/chahana/follow',
+			data:{
+				'fname':firstuser,
+				'sname':secondname
+			},
+			dataType: 'json',
+		});
+	});
+	});
+
+	</script>
+<a href="{% url 'chahana:followinguserss' user.id %}">Friends</a>
+<a href="{% url 'chahana:create1' user.id %}">Make A Wish </a>
+
+
+
+
+
+{% for i in wish %}
+{{i.item_name}}
+{% endfor %}
+{{user.item_name}}
+</body>
+</html>

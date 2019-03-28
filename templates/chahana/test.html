@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta content="width=device-width, initial-scale=1" name="viewport">
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/css/select2.min.css" rel="stylesheet"/>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/js/select2.min.js"></script>
+    <script>
+    </script>
+</head>
+<body>
+<form id="form" method="post">
+    {% csrf_token %}
+    <div class="container" style="text-align:center;padding-top:50px;">
+        <div>
+            <div style="display: inline-block;">
+                <h3><span class="label label-default">Task: </span></h3>
+            </div>
+
+            <div style="display: inline-block;padding-left:25px;">
+                <input class="form-control" id="ex1" name="text" type="text" value="Task Name" onfocus="this.value=''">
+            </div>
+
+        </div>
+        <br>
+        <div>
+            <div style="display: inline-block;">
+                <h3 style="padding-left:105px;"><span class="label label-default">Documents: </span></h3>
+            </div>
+            <div style="display: inline-block;padding-left:25px;">
+                <select class="form-control" id="first_doc" onclick="">
+                    <option disabled selected>Choose Here</option>
+                    {% for i in data %}
+                    <option value={{i.doc_name}}>{{i.doc_name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div style="display: inline-block;padding-left:25px;">
+                <select class="form-control" id="first_no">
+                    <option disabled selected>Count</option>
+                    {% for i in index %}
+                    <option value={{i}}>{{i}}</option>
+                    {% endfor %}
+                </select>
+
+            </div>
+
+            <div style="display: inline-block;padding-left:20px;">
+                <!--<h1 id="next" ><span class="btn btn-primary">Next </span></h1>-->
+                <button id="next" type="button" class="btn btn-primary">Next</button>
+            </div>
+        </div>
+        <br>
+
+    </div>
+
+</form>
+
+
+<div class="container" style="padding-left:120px;">
+    <h2 style="text-align:center;padding-top:30px;">Details</h2>
+    <table class="table" id="td_val">
+        <thead>
+        <tr>
+            <th>Task</th>
+            <th>Document</th>
+            <th>No_Of_Copies</th>
+            <th>Action</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+
+        </tr>
+        </tbody>
+    </table>
+    <div style="display: inline-block;padding-left:450px;">
+          <h1  id="sub"><span class="btn btn-primary">Submit </span></h1>
+            <!--<button >Submit</button>-->
+        </div>
+</div>
+<script>
+
+$(document).ready(function(){
+
+    $("#next").click(function() { // using the unique ID of the button
+        var doc_name = $("#first_doc option:selected").text();
+        var doc_no = $("#first_no option:selected").val();
+        var task=$("#ex1").val();
+        console.log(task)
+        $('#result').append(doc_name);
+        console.log(doc_name,doc_no,task)
+        if(task!="Task Name" && doc_name!="Choose Here" && doc_no!="Count" && task!=""){
+            var markup = "<tr><td>" + task + "</td> <td>" + doc_name + "</td> </td>"+"</td> <td>" + doc_no + "</td> <td><input class='btn btn-default' value='Remove' type='button' onClick='$(this).parent().parent().remove();'></td></tr>";
+            $("table tbody").append(markup);
+        }
+        $("#remove").click(function(){
+                    $(this).parent().parent().remove();
+
+        });
+    });
+          $('#sub').click(function(e){
+
+                var doc_val=[]
+                var no_val=[]
+                var oTable = document.getElementById('td_val');
+                //gets rows of table
+                var rowLength = oTable.rows.length;
+
+                //loops through rows
+                for (i = 1; i < rowLength; i++){
+
+
+                  //gets cells of current row
+                   var oCells = oTable.rows.item(i).cells;
+
+                   //gets amount of cells of current row
+                   var cellLength = oCells.length;
+
+                   //loops through each cell in current row
+                   for(var j = 0; j < cellLength-1; j++){
+                          // get your cell info here
+
+                          var cellVal = oCells.item(j).innerHTML;
+
+                          console.log(cellVal);
+                          if(j==1){
+                            doc_val.push(cellVal);
+                          }
+                          if(j==2){
+                            no_val.push(cellVal);
+                          }
+
+                       }
+
+                }
+                    e.preventDefault();
+                    var task=$("#ex1").val();
+                    if(task!="Task Name" && task!=""){
+                        console.log(task)
+
+                        // using jQuery
+                        var csrftoken = jQuery("[name=csrfmiddlewaretoken]").val();
+
+                        function csrfSafeMethod(method) {
+                            // these HTTP methods do not require CSRF protection
+                            return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+                        }
+                        // set csrf header
+                        $.ajaxSetup({
+                            beforeSend: function(xhr, settings) {
+                                if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+                                    xhr.setRequestHeader("X-CSRFToken", csrftoken);
+                                }
+                            }
+                        });
+
+                         $.ajax({
+                            type : "POST",
+                            url: "/insert-data/",
+                            data:{
+                                'doc':doc_val,
+                                'no':no_val,
+                                'task_val':task,
+
+                            },
+                             dataType: 'json',
+                    success: function (data) {
+                      if (data.is_taken) {
+                        alert("A user with this username already exists.");
+                      }
+                    },
+                     error: function (jqXHR, status, err) {
+                            // do something
+              },
+                        });
+                        }
+       });
+});
+
+
+</script>
+</body>
+</html>

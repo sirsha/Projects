@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<div class="container">
+
+
+
+    <form  method="post" enctype="multipart/form-data">
+        <!--<form action="/chahana/create" method="POST">#}-->
+        {% csrf_token %}
+        kfndskvnsdk
+        {{ form.as_p }}
+        <input type="submit" value="wish" id="clickMe">
+    </form>
+
+        <center>
+             <table class="table" border="1">
+        <br><tr>
+            <th>Wish List Items</th>
+        </tr>
+
+
+            {% for each in give1 %}
+                <tr>
+                <td>{{ each.item_name }}</td>
+                <td><a href="/edit1/{{ each.id }}">Edit </a><a href="/delete1/{{ each.id }}">Delete</a></td>
+                </tr>
+            {% endfor %}
+
+    </table>
+
+
+
+        </center>
+
+    </div>
+<script>
+    $(document).ready(function(){
+		$("#clickMe").click(function() {
+		$.ajax({
+			type:'POST',
+			url:'/chahana/create1',
+			data:{
+				'iname':item_name,
+				'imname':img_name,
+			},
+			dataType: 'json',
+		});
+	});
+	});
+
+</script>
+
+</body>
+</html>

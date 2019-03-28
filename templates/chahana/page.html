@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    {% for i in reg %}
+        <a href="{% url 'chahana:user_profile' i.id %}">
+            <button type="button" name="completeprofile" >
+        Complete Profile</button>
+        </a>
+
+    {% endfor %}
+</head>
+<body>
+
+</body>
+</html>
